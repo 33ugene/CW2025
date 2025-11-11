@@ -6,8 +6,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
+
+
 <Pane fx:controller="com.comp2042.GuiController"
       xmlns:fx="http://javafx.com/fxml">
+    <VBox spacing="5" style="-fx-padding: 10;">
+        <Label fx:id="scoreLabel" text="Score: 0" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+        <Label fx:id="linesLabel" text="Lines: 0" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+    </VBox>
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
         <center>

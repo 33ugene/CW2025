@@ -3,15 +3,16 @@ package com.comp2042;
 public class GameController implements InputEventListener {
 
     private Board board = new SimpleBoard(25, 10);
-
+    private ScoreManager scoreManager;
     private final GuiController viewGuiController;
 
     public GameController(GuiController c) {
         viewGuiController = c;
+        this.scoreManager = new ScoreManager();
         board.createNewBrick();
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
-        viewGuiController.bindScore(board.getScore().scoreProperty());
+        //viewGuiController.bindScore(board.getScore().scoreProperty());
     }
 
     @Override
@@ -22,7 +23,8 @@ public class GameController implements InputEventListener {
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
-                board.getScore().add(clearRow.getScoreBonus());
+                scoreManager.addLinesCleared(clearRow.getLinesRemoved());
+                viewGuiController.updateScoreDisplay(scoreManager.getScore(), scoreManager.getLinesCleared());
             }
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
@@ -30,10 +32,6 @@ public class GameController implements InputEventListener {
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
 
-        } else {
-            if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(1);
-            }
         }
         return new DownData(clearRow, board.getViewData());
     }
@@ -60,6 +58,8 @@ public class GameController implements InputEventListener {
     @Override
     public void createNewGame() {
         board.newGame();
+        scoreManager.reset(); // resets the scores for new game
+        viewGuiController.updateScoreDisplay(0, 0); // resets display
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
     }
 }

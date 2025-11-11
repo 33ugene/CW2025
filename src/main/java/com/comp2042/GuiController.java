@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import javafx.scene.control.Label;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -50,6 +51,9 @@ public class GuiController implements Initializable {
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+
+    @FXML private Label scoreLabel;
+    @FXML private Label linesLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -190,6 +194,9 @@ public class GuiController implements Initializable {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
+
+                // TODO: update score manager with lines cleared
+                // access gamecontroller's score manager
             }
             refreshBrick(downData.getViewData());
         }
@@ -198,9 +205,6 @@ public class GuiController implements Initializable {
 
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
-    }
-
-    public void bindScore(IntegerProperty integerProperty) {
     }
 
     public void gameOver() {
@@ -217,6 +221,18 @@ public class GuiController implements Initializable {
         timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+    }
+
+    public void updateScoreDisplay(int score, int lines) {
+        if (scoreLabel != null) {
+            scoreLabel.setText("Score: " + score);
+        }
+        if (linesLabel != null) {
+            linesLabel.setText("Lines: " + lines);
+        }
+
+        // Print for console debugging
+        System.out.println("Score updated - Total: " + score + ", Lines: " + lines);
     }
 
     public void pauseGame(ActionEvent actionEvent) {
