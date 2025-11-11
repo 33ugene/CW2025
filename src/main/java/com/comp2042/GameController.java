@@ -1,5 +1,11 @@
 package com.comp2042;
 
+import com.comp2042.logic.bricks.Brick;
+import com.comp2042.logic.bricks.BrickGenerator;
+import com.comp2042.logic.bricks.RandomBrickGenerator;
+
+import java.util.List;
+
 public class GameController implements InputEventListener {
 
     private Board board = new SimpleBoard(25, 10);
@@ -9,10 +15,24 @@ public class GameController implements InputEventListener {
     public GameController(GuiController c) {
         viewGuiController = c;
         this.scoreManager = new ScoreManager();
+
         board.createNewBrick();
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
-        //viewGuiController.bindScore(board.getScore().scoreProperty());
+
+        updateNextPiecePreview();
+    }
+
+    private void updateNextPiecePreview() {
+        BrickGenerator generator = ((SimpleBoard) board).getBrickGenerator();
+        if (generator instanceof RandomBrickGenerator) {
+            RandomBrickGenerator brickGenerator = (RandomBrickGenerator) generator;
+            List<Brick> nextBricks  = brickGenerator.getNextBricks(2);
+            if (nextBricks != null && !nextBricks.isEmpty()) {
+                viewGuiController.updateNextPiecePreview(nextBricks);
+            }
+
+        }
     }
 
     @Override
@@ -31,6 +51,8 @@ public class GameController implements InputEventListener {
             }
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
+
+            updateNextPiecePreview();
 
         }
         return new DownData(clearRow, board.getViewData());
@@ -61,5 +83,6 @@ public class GameController implements InputEventListener {
         scoreManager.reset(); // resets the scores for new game
         viewGuiController.updateScoreDisplay(0, 0); // resets display
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        updateNextPiecePreview();
     }
 }

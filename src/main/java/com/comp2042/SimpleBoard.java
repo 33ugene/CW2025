@@ -124,4 +124,8 @@ public class SimpleBoard implements Board {
         score.reset();
         createNewBrick();
     }
+
+    public BrickGenerator getBrickGenerator() {
+        return brickGenerator;
+    }
 }

@@ -1,9 +1,9 @@
 package com.comp2042;
 
+import com.comp2042.logic.bricks.Brick;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,7 +22,9 @@ import javafx.util.Duration;
 
 import javafx.scene.control.Label;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
 
 public class GuiController implements Initializable {
 
@@ -54,6 +56,8 @@ public class GuiController implements Initializable {
 
     @FXML private Label scoreLabel;
     @FXML private Label linesLabel;
+    @FXML private GridPane nextPiecePanel;
+    @FXML private Label nextPieceLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -234,6 +238,38 @@ public class GuiController implements Initializable {
         // Print for console debugging
         System.out.println("Score updated - Total: " + score + ", Lines: " + lines);
     }
+
+    // method for displaying next piece
+    public void updateNextPiecePreview(List<Brick> nextBricks) {
+        if (nextBricks == null || nextBricks.isEmpty() || nextPiecePanel == null) return;
+
+        // Clear previous previews
+        nextPiecePanel.getChildren().clear();
+
+        // Display the first next piece
+        Brick firstBrick = nextBricks.get(0);
+        List<int[][]> shapes = firstBrick.getShapeMatrix();
+        if (!shapes.isEmpty()) {
+            int[][] shape = shapes.get(0); // get first rotation
+            for (int i = 0; i < shape.length; i++) {
+                for (int j = 0; j < shape[i].length; j++) {
+                    if (shape[i][j] != 0) {
+                        Rectangle rect = new Rectangle(BRICK_SIZE - 2, BRICK_SIZE - 2);
+                        rect.setFill(getFillColor(shape[i][j]));
+                        rect.setArcHeight(5);
+                        rect.setArcWidth(5);
+                        nextPiecePanel.add(rect, j, i);
+                    }
+                }
+            }
+        }
+
+        if (nextPieceLabel != null) {
+            nextPieceLabel.setText("Next Piece");
+        }
+    }
+
+
 
     public void pauseGame(ActionEvent actionEvent) {
         gamePanel.requestFocus();

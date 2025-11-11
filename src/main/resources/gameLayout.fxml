@@ -19,6 +19,14 @@
         <center>
             <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
         </center>
+        <!-- Next Piece Preview Section -->
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Label fx:id="nextPieceLabel" text="Next Pieces" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+            <VBox spacing="5">
+                <Label text="Next:" style="-fx-font-size: 12px; -fx-text-fill: white;"/>
+                <GridPane fx:id="nextPiecePanel" hgap="2" vgap="2"/>
+            </VBox>
+        </VBox>
     </BorderPane>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
