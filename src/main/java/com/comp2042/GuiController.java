@@ -54,6 +54,8 @@ public class GuiController implements Initializable {
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private Rectangle[][] ghostPieceRectangles = null;
+
     @FXML private Label scoreLabel;
     @FXML private Label linesLabel;
     @FXML private GridPane nextPiecePanel;
@@ -174,6 +176,10 @@ public class GuiController implements Initializable {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
                 }
             }
+
+            if (eventListener != null) {
+
+            }
         }
     }
 
@@ -268,6 +274,51 @@ public class GuiController implements Initializable {
             nextPieceLabel.setText("Next Piece");
         }
     }
+
+    public void drawGhostPiece(int[][] ghostData) {
+        clearGhostPiece();
+
+        if (ghostData == null || ghostData.length < 5) return;
+
+        int ghostX = ghostData[4][0];
+        int ghostY = ghostData[4][1];
+
+        ghostPieceRectangles = new Rectangle[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (ghostData[i][j] != 0) {
+                    Rectangle ghostRect = new Rectangle(BRICK_SIZE, BRICK_SIZE);
+
+                    Color pieceColor = (Color) getFillColor(ghostData[i][j]);
+                    Color ghostColor = new Color(pieceColor.getRed(),pieceColor.getGreen(), pieceColor.getBlue(), 0.3);
+
+                    ghostRect.setFill(ghostColor);
+                    ghostRect.setStroke(Color.WHITE);
+                    ghostRect.setStrokeWidth(1);
+                    ghostRect.setArcHeight(9);
+                    ghostRect.setArcWidth(9);
+
+                    gamePanel.add(ghostRect, ghostX + j, ghostY + i - 2);
+
+                    ghostPieceRectangles[i][j] = ghostRect;
+                }
+            }
+        }
+    }
+
+    private void clearGhostPiece() {
+        if (ghostPieceRectangles != null) {
+            for (int i = 0; i < ghostPieceRectangles.length; i++) {
+                for (int j = 0; j < ghostPieceRectangles.length; j++) {
+                    if (ghostPieceRectangles[i][j] != null) {
+                        gamePanel.getChildren().remove(ghostPieceRectangles[i][j]);
+                    }
+                }
+            }
+            ghostPieceRectangles = null;
+        }
+    }
+
 
 
 
