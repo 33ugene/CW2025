@@ -13,6 +13,7 @@
     <VBox spacing="5" style="-fx-padding: 10;">
         <Label fx:id="scoreLabel" text="Score: 0" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
         <Label fx:id="linesLabel" text="Lines: 0" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
+        <Label fx:id="timerLabel" text="Time: 00:00" style="-fx-font-size: 14px; -fx-text-fill: white;"/>
     </VBox>
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
@@ -27,6 +28,7 @@
                 <GridPane fx:id="nextPiecePanel" hgap="2" vgap="2"/>
             </VBox>
         </VBox>
+
     </BorderPane>
 
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">

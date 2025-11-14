@@ -6,22 +6,27 @@ import com.comp2042.logic.bricks.RandomBrickGenerator;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Timer;
 
 public class GameController implements InputEventListener {
 
     private Board board = new SimpleBoard(25, 10);
     private ScoreManager scoreManager;
     private final GuiController viewGuiController;
+    private TimerManager timerManager;
 
     public GameController(GuiController c) {
         viewGuiController = c;
         this.scoreManager = new ScoreManager();
+        this.timerManager = new TimerManager();
 
         board.createNewBrick();
         viewGuiController.setEventListener(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
 
         updateNextPiecePreview();
+
+        timerManager.start();
     }
 
     private void updateNextPiecePreview() {
@@ -49,6 +54,7 @@ public class GameController implements InputEventListener {
             }
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
+                timerManager.pause();
             }
 
             viewGuiController.refreshGameBackground(board.getBoardMatrix());
@@ -57,6 +63,8 @@ public class GameController implements InputEventListener {
 
         }
         updateGhostPiece();
+
+        viewGuiController.updateTimerDisplay(timerManager.getFormattedTime());
 
         return new DownData(clearRow, board.getViewData());
     }
@@ -129,10 +137,24 @@ public class GameController implements InputEventListener {
         return false;
     }
 
+    public void pauseTimer() {
+        timerManager.pause();
+    }
+
+    public void resumeTimer() {
+        timerManager.start();
+    }
+
+
+
+
     @Override
     public void createNewGame() {
         board.newGame();
         scoreManager.reset(); // resets the scores for new game
+        timerManager.reset();
+        timerManager.start();
+
         viewGuiController.updateScoreDisplay(0, 0); // resets display
         viewGuiController.refreshGameBackground(board.getBoardMatrix());
         updateNextPiecePreview();

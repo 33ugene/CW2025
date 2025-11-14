@@ -58,8 +58,10 @@ public class GuiController implements Initializable {
 
     @FXML private Label scoreLabel;
     @FXML private Label linesLabel;
+    @FXML private Label timerLabel;
     @FXML private GridPane nextPiecePanel;
     @FXML private Label nextPieceLabel;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -233,6 +235,12 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
     }
 
+    public void updateTimerDisplay(String time) {
+        if (timerLabel != null) {
+            timerLabel.setText("Time: " + time);
+        }
+    }
+
     public void updateScoreDisplay(int score, int lines) {
         if (scoreLabel != null) {
             scoreLabel.setText("Score: " + score);
@@ -318,8 +326,6 @@ public class GuiController implements Initializable {
             ghostPieceRectangles = null;
         }
     }
-
-
 
 
     public void pauseGame(ActionEvent actionEvent) {
