@@ -90,6 +90,50 @@ public class GameController implements InputEventListener {
         return board.getViewData();
     }
 
+    @Override
+    public ViewData onHardDropEvent(MoveEvent event) {
+        int dropDistance = calculateDropDistance();
+
+        for (int i = 0; i < dropDistance; i++) {
+            board.moveBrickDown();
+        }
+
+        scoreManager.addHardDropPoints(dropDistance);
+        viewGuiController.updateScoreDisplay(scoreManager.getScore(), scoreManager.getLinesCleared());
+
+        board.mergeBrickToBackground();
+        ClearRow clearRow = board.clearRows();
+        if (clearRow.getLinesRemoved() > 0) {
+            scoreManager.addLinesCleared(clearRow.getLinesRemoved());
+            viewGuiController.updateScoreDisplay(scoreManager.getScore(), scoreManager.getLinesCleared());
+        }
+
+        if (board.createNewBrick()) {
+            viewGuiController.gameOver();
+            timerManager.pause();
+        }
+
+        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        updateNextPiecePreview();
+        updateGhostPiece();
+        viewGuiController.updateTimerDisplay(timerManager.getFormattedTime());
+        viewGuiController.showHardDropEffect();
+
+        return board.getViewData();
+    }
+
+    private int calculateDropDistance() {
+        int[][] currentShape = board.getViewData().getBrickData();
+        int currentX = board.getViewData().getxPosition();
+        int currentY = board.getViewData().getyPosition();
+
+        int dropDistance = 0;
+        while (!checkCollision(currentShape, currentX, currentY + dropDistance + 1)) {
+            dropDistance++;
+        }
+        return dropDistance;
+    }
+
     private void updateGhostPiece() {
         int[][] ghostData = getGhostPiecePosition();
         viewGuiController.drawGhostPiece(ghostData);

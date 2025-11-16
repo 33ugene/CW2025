@@ -88,6 +88,10 @@ public class GuiController implements Initializable {
                         moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
                         keyEvent.consume();
                     }
+                    if (keyEvent.getCode() == KeyCode.SPACE) {
+                        refreshBrick(eventListener.onHardDropEvent(new MoveEvent(EventType.HARD_DROP, EventSource.USER)));
+                        keyEvent.consume();
+                    }
                 }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
@@ -207,8 +211,6 @@ public class GuiController implements Initializable {
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
 
-                // TODO: update score manager with lines cleared
-                // access gamecontroller's score manager
             }
             refreshBrick(downData.getViewData());
         }
@@ -325,6 +327,17 @@ public class GuiController implements Initializable {
             }
             ghostPieceRectangles = null;
         }
+    }
+
+    public void showHardDropEffect() {
+        // Quick visual feedback that hard drop happened
+        gamePanel.setStyle("-fx-background-color: rgba(255,255,255,0.1);");
+
+        Timeline flash = new Timeline(
+                new KeyFrame(Duration.millis(100),
+                        ae -> gamePanel.setStyle("-fx-background-color: transparent;")
+                ));
+        flash.play();
     }
 
 
