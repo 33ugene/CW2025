@@ -1,5 +1,7 @@
 package com.comp2042;
 
+import javax.swing.text.View;
+
 public interface InputEventListener {
 
     DownData onDownEvent(MoveEvent event);
@@ -11,6 +13,10 @@ public interface InputEventListener {
     ViewData onRotateEvent(MoveEvent event);
 
     ViewData onHardDropEvent(MoveEvent event);
+
+    ViewData onPauseEvent(MoveEvent event);
+
+    //ViewData onHoldEvent(MoveEvent event);
 
     void createNewGame();
 }

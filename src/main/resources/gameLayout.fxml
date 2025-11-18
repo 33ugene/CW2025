@@ -28,6 +28,12 @@
                 <GridPane fx:id="nextPiecePanel" hgap="2" vgap="2"/>
             </VBox>
         </VBox>
+        <!-- Pause Overlay -->
+        <VBox fx:id="pauseOverlay" alignment="CENTER" style="-fx-background-color: rgba(0,0,0,0.7);" visible="false">
+            <Label fx:id="pauseLabel" text="PAUSED" style="-fx-font-size: 24px; -fx-text-fill: yellow; -fx-font-weight: bold;"/>
+        </VBox>
+
+
 
     </BorderPane>
 

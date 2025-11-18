@@ -14,6 +14,7 @@ import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -61,6 +62,12 @@ public class GuiController implements Initializable {
     @FXML private Label timerLabel;
     @FXML private GridPane nextPiecePanel;
     @FXML private Label nextPieceLabel;
+    @FXML private GridPane holdPiecePanel;
+    @FXML private Label holdLabel;
+    @FXML private Label pauseLabel;
+    @FXML private VBox pauseOverlay;
+
+    private Rectangle[][] holdPieceRectangles = null;
 
 
     @Override
@@ -75,6 +82,11 @@ public class GuiController implements Initializable {
                     if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
                         refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
                         keyEvent.consume();
+                    }
+                    if (keyEvent.getCode() == KeyCode.P || keyEvent.getCode() == KeyCode.ESCAPE) {
+                        eventListener.onPauseEvent(new MoveEvent(EventType.PAUSE, EventSource.USER));
+                        keyEvent.consume();
+                        return; // Don't process other keys when pausing
                     }
                     if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
                         refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
@@ -92,6 +104,10 @@ public class GuiController implements Initializable {
                         refreshBrick(eventListener.onHardDropEvent(new MoveEvent(EventType.HARD_DROP, EventSource.USER)));
                         keyEvent.consume();
                     }
+                    /*if (keyEvent.getCode() == KeyCode.C) {
+                        refreshBrick(eventListener.onHoldEvent(new MoveEvent(EventType.HOLD, EventSource.USER)));
+                        keyEvent.consume();
+                    }*/
                 }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
@@ -252,7 +268,7 @@ public class GuiController implements Initializable {
         }
 
         // Print for console debugging
-        System.out.println("Score updated - Total: " + score + ", Lines: " + lines);
+        //System.out.println("Score updated - Total: " + score + ", Lines: " + lines);
     }
 
     // method for displaying next piece
@@ -329,6 +345,49 @@ public class GuiController implements Initializable {
         }
     }
 
+    public void updateHoldDisplay(Brick heldBrick, boolean canHold) {
+        if (holdPiecePanel == null) return;
+
+        holdPiecePanel.getChildren().clear();
+
+        if (holdLabel != null) {
+            if (canHold) {
+                holdLabel.setText("Hold: Ready");
+                holdLabel.setStyle("-fx-text-fill: green;");
+            } else {
+                holdLabel.setText("Hold: Used");
+                holdLabel.setStyle("-fx-text-fill: gray;");
+            }
+        }
+
+        if (heldBrick != null) {
+            displayBrickInPanel(heldBrick, holdPiecePanel);
+        }
+    }
+
+
+
+
+    private void displayBrickInPanel(Brick brick, GridPane panel) {
+        if (brick == null || panel == null) return;
+
+        List<int[][]> shapes = brick.getShapeMatrix();
+        if (!shapes.isEmpty()) {
+            int[][] shape = shapes.get(0);
+            for (int i = 0; i < shape.length; i++) {
+                for (int j = 0; j < shape[i].length; j++) {
+                    if (shape[i][j] != 0) {
+                        Rectangle rect = new Rectangle(BRICK_SIZE - 2, BRICK_SIZE - 2);
+                        rect.setFill(getFillColor(shape[i][j]));
+                        rect.setArcWidth(5);
+                        rect.setArcHeight(5);
+                        panel.add(rect, j, i);
+                    }
+                }
+            }
+        }
+    }
+
     public void showHardDropEffect() {
         // Quick visual feedback that hard drop happened
         gamePanel.setStyle("-fx-background-color: rgba(255,255,255,0.1);");
@@ -339,6 +398,30 @@ public class GuiController implements Initializable {
                 ));
         flash.play();
     }
+
+    public void updatePauseDisplay(boolean isPaused) {
+        if (pauseLabel != null) {
+            if (isPaused) {
+                timeLine.pause();
+                pauseLabel.setText("PAUSED");
+                pauseLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: yellow; -fx-font-weight: bold;");
+                pauseLabel.setVisible(true);
+            } else {
+                timeLine.play();
+                pauseLabel.setVisible(false);
+            }
+        }
+
+        // Optional: Add semi-transparent overlay when paused
+        if (pauseOverlay != null) {
+            pauseOverlay.setVisible(isPaused);
+        }
+
+        System.out.println("GUI Pause state: " + (isPaused ? "PAUSED" : "RUNNING"));
+    }
+
+
+
 
 
     public void pauseGame(ActionEvent actionEvent) {

@@ -85,7 +85,7 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 10);
+        currentOffset = new Point(4, 1); // fix spawn location to fix game ending when blocks are in the middle
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
@@ -115,6 +115,17 @@ public class SimpleBoard implements Board {
     @Override
     public Score getScore() {
         return score;
+    }
+
+    public boolean setCurrentBrick(Brick brick) {
+        if (brick == null) return false;
+
+        brickRotator.setBrick(brick);
+        currentOffset = new Point(4, 0); // Reset to spawn position
+
+        // Check if the new brick fits
+        return !MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(),
+                (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
 

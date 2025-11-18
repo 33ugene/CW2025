@@ -10,7 +10,7 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
 
-    private final Deque<Brick> nextBricks = new ArrayDeque<>();
+    public final Deque<Brick> nextBricks = new ArrayDeque<>();
 
 
 
