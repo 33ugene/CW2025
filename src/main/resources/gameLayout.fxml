@@ -1,98 +1,122 @@
 <?import com.comp2042.GameOverPanel?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Rectangle?>
 
-<BorderPane fx:controller="com.comp2042.GuiController"
-            xmlns:fx="http://javafx.com/fxml"
-            style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e);">
+<StackPane fx:id="rootContainer" fx:controller="com.comp2042.GuiController"
+           xmlns:fx="http://javafx.com/fxml"
+           style="-fx-background-color: radial-gradient(radius 120%, #0f172a, #0b1120); -fx-padding: 30;">
 
-    <!-- Main Game Content - This will be perfectly centered -->
-    <HBox alignment="CENTER" spacing="40" BorderPane.alignment="CENTER">
+    <!-- Core layout sits in a BorderPane so the StackPane can center everything -->
+    <BorderPane fx:id="mainContainer" prefWidth="900" prefHeight="620"
+                style="-fx-background-color: transparent;">
+        <!-- Main Game Content -->
+        <center>
+            <HBox alignment="CENTER" spacing="40">
 
-        <!-- Left Side: Game Board -->
-        <VBox spacing="20" alignment="CENTER">
-            <!-- Game Board -->
-            <BorderPane style="-fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 10; -fx-border-color: #ecf0f1; -fx-border-width: 2; -fx-border-radius: 10;"
-                        prefWidth="220" prefHeight="440">
-                <center>
-                    <GridPane fx:id="gamePanel" hgap="1" vgap="1"
-                              prefWidth="210" prefHeight="420" maxWidth="210" maxHeight="420"
-                              style="-fx-background-color: rgba(0,0,0,0.5);"/>
-                </center>
-            </BorderPane>
+                <!-- Left Side: Game Board -->
+                 <VBox spacing="25" alignment="CENTER">
+                    <!-- Game Board -->
+                    <BorderPane fx:id="boardFrame" style="-fx-background-color: rgba(15,23,42,0.85); -fx-background-radius: 18; -fx-border-color: rgba(255,255,255,0.12); -fx-border-width: 2; -fx-border-radius: 18; -fx-effect: dropshadow(gaussian, rgba(3,8,20,0.8), 25, 0, 0, 8);"
+                                prefWidth="300" prefHeight="600">
+                        <center>
+                            <StackPane prefWidth="249" prefHeight="574" maxWidth="249" maxHeight="574" alignment="TOP_LEFT">
+                                <clip>
+                                    <Rectangle width="249" height="574"/>
+                                </clip>
+                                <GridPane fx:id="gamePanel" hgap="1" vgap="1"
+                                          prefWidth="249" prefHeight="574" maxWidth="249" maxHeight="574"
+                                          style="-fx-background-color: rgba(0,0,0,0.5);"/>
+                                <GridPane fx:id="brickPanel" hgap="1" vgap="1"
+                                          StackPane.alignment="TOP_LEFT"
+                                          managed="false"
+                                          mouseTransparent="true"
+                                          pickOnBounds="false"/>
+                            </StackPane>
+                        </center>
+                    </BorderPane>
+                </VBox>
 
-            <!-- Current Piece Display -->
-            <VBox spacing="5" alignment="CENTER">
-                <Label text="CURRENT" style="-fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <GridPane fx:id="brickPanel" vgap="1" hgap="1"
-                          style="-fx-border-color: #bdc3c7; -fx-border-width: 1; -fx-background-color: rgba(0,0,0,0.2);"
-                          prefWidth="80" prefHeight="80"/>
-            </VBox>
-        </VBox>
+                <!-- Right Side: Stats and Info -->
+                 <VBox spacing="18" alignment="CENTER" prefHeight="574" prefWidth="220">
 
-        <!-- Right Side: Stats and Info -->
-        <VBox spacing="20" alignment="TOP_CENTER">
+                    <!-- Next Piece Panel -->
+                     <VBox fx:id="nextCard" spacing="8" style="-fx-padding: 14; -fx-background-color: rgba(15,23,42,0.8); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 1; -fx-border-radius: 14; -fx-effect: dropshadow(gaussian, rgba(3,8,20,0.55), 18, 0.15, 0, 5);">
+                         <Label fx:id="nextPieceTitle" text="NEXT PIECE" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                        <GridPane fx:id="nextPiecePanel" hgap="3" vgap="3"
+                                  style="-fx-padding: 6; -fx-background-color: rgba(8,12,24,0.65); -fx-background-radius: 10;"/>
+                    </VBox>
 
-            <!-- Stats Panel -->
-            <VBox spacing="8" style="-fx-padding: 15; -fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 10; -fx-border-color: #7f8c8d; -fx-border-width: 1; -fx-border-radius: 10;"
-                  prefWidth="140">
-                <Label text="TETRIS" style="-fx-text-fill: #ecf0f1; -fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center;"/>
-                <Separator style="-fx-background-color: #7f8c8d;"/>
+                    <!-- Hold Piece Panel -->
+                     <VBox fx:id="holdCard" spacing="8" style="-fx-padding: 14; -fx-background-color: rgba(15,23,42,0.85); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 1; -fx-border-radius: 14; -fx-effect: dropshadow(gaussian, rgba(3,8,20,0.55), 18, 0.15, 0, 5);">
+                         <Label fx:id="holdTitle" text="HOLD / QUEUE" style="-fx-font-size: 15px; -fx-font-weight: bold;"/>
+                        <GridPane fx:id="holdPiecePanel" hgap="3" vgap="3"
+                                  style="-fx-padding: 6; -fx-background-color: rgba(8,12,24,0.65); -fx-background-radius: 10;"/>
+                        <Label fx:id="holdLabel" text="Ready" style="-fx-text-fill: #34d399; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <Separator style="-fx-background-color: rgba(255,255,255,0.08);"/>
+                        <Label text="NEXT 3" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        <VBox fx:id="nextThreeContainer" spacing="6"/>
+                    </VBox>
 
-                <Label text="SCORE" style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;"/>
-                <Label fx:id="scoreLabel" text="0" style="-fx-text-fill: #ecf0f1; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <!-- Stats Panel (moved below Hold) -->
+                     <VBox fx:id="statsCard" spacing="8" style="-fx-padding: 18; -fx-background-color: rgba(15,23,42,0.8); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.08); -fx-border-width: 1; -fx-border-radius: 14; -fx-effect: dropshadow(gaussian, rgba(3,8,20,0.55), 18, 0.15, 0, 5);"
+                          prefWidth="180">
+                        <Label fx:id="statsTitle" text="TETRIS" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-alignment: center;"/>
+                        <Separator style="-fx-background-color: rgba(255,255,255,0.08);"/>
 
-                <Label text="LINES" style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;"/>
-                <Label fx:id="linesLabel" text="0" style="-fx-text-fill: #ecf0f1; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <Label text="SCORE" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="scoreLabel" text="0" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-                <Label text="LEVEL" style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;"/>
-                <Label fx:id="levelLabel" text="1" style="-fx-text-fill: #ecf0f1; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <Label text="LINES" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="linesLabel" text="0" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-                <Label text="TIME" style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;"/>
-                <Label fx:id="timerLabel" text="00:00" style="-fx-text-fill: #ecf0f1; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-            </VBox>
+                        <Label text="LEVEL" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="levelLabel" text="1" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-            <!-- Next Piece Panel -->
-            <VBox spacing="5" style="-fx-padding: 10; -fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 8; -fx-border-color: #7f8c8d; -fx-border-width: 1; -fx-border-radius: 8;">
-                <Label text="NEXT" style="-fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <GridPane fx:id="nextPiecePanel" hgap="2" vgap="2"/>
-            </VBox>
+                        <Label text="TIME" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="timerLabel" text="00:00" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                    </VBox>
 
-            <!-- Hold Piece Panel -->
-            <VBox spacing="5" style="-fx-padding: 10; -fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 8; -fx-border-color: #7f8c8d; -fx-border-width: 1; -fx-border-radius: 8;">
-                <Label text="HOLD" style="-fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <GridPane fx:id="holdPiecePanel" hgap="2" vgap="2"/>
-                <Label fx:id="holdLabel" text="Ready" style="-fx-text-fill: #2ecc71; -fx-font-size: 11px;"/>
-            </VBox>
-
-            <!-- Controls Info -->
-            <VBox spacing="5" style="-fx-padding: 10; -fx-background-color: rgba(0,0,0,0.4); -fx-background-radius: 8;">
-                <Label text="CONTROLS" style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold;"/>
-                <Label text="←→ : Move" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
-                <Label text="↑ : Rotate" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
-                <Label text="↓ : Soft Drop" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
-                <Label text="SPACE : Hard Drop" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
-                <Label text="C : Hold" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
-                <Label text="P : Pause" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
-                <Label text="N : New Game" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;"/>
-            </VBox>
-        </VBox>
-    </HBox>
+                    <!-- Controls Info -->
+                     <VBox fx:id="controlsCard" spacing="6" style="-fx-padding: 14; -fx-background-color: rgba(8,12,24,0.85); -fx-background-radius: 14; -fx-border-color: rgba(255,255,255,0.05); -fx-border-width: 1; -fx-border-radius: 14;">
+                         <Label fx:id="controlsTitle" text="CONTROLS" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+                        <Label text="←→  MOVE" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                        <Label text="↑  ROTATE" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                        <Label text="↓  SOFT DROP" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                        <Label text="SPACE  HARD DROP" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                        <Label text="C  HOLD / SWAP" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                        <Label text="P  PAUSE" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                        <Label text="N  NEW GAME" style="-fx-text-fill: #94a3b8; -fx-font-size: 11px;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </center>
+    </BorderPane>
 
     <!-- Overlay Elements (Game Over, Pause) -->
-    <Group fx:id="groupNotification" BorderPane.alignment="CENTER">
+    <Group fx:id="groupNotification" pickOnBounds="false">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
         </VBox>
     </Group>
 
     <!-- Pause Overlay -->
-    <Label fx:id="pauseLabel" text="⏸️ PAUSED"
-           style="-fx-font-size: 32px; -fx-text-fill: #f39c12; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.8); -fx-padding: 20px; -fx-background-radius: 10;"
-           visible="false"
-           BorderPane.alignment="CENTER"/>
+    <VBox fx:id="pauseOverlay" alignment="CENTER" spacing="12"
+          visible="false"
+          StackPane.alignment="CENTER"
+          style="-fx-background-color: rgba(2,6,23,0.88); -fx-padding: 35; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.65), 30, 0.4, 0, 6);">
+        <Label fx:id="pauseLabel" text="⏸ PAUSED"
+               style="-fx-font-size: 32px; -fx-text-fill: #facc15; -fx-font-weight: bold;"/>
+        <Button fx:id="pauseResumeButton" text="Resume"
+                onAction="#handleResumeGame"
+                style="-fx-background-color: linear-gradient(to right, #22d3ee, #3b82f6); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 36;"/>
+        <Button fx:id="pauseMenuButton" text="Main Menu"
+                onAction="#handleReturnToMenu"
+                style="-fx-background-color: transparent; -fx-border-color: rgba(248,250,252,0.6); -fx-border-width: 2; -fx-border-radius: 12; -fx-text-fill: #e2e8f0; -fx-font-weight: bold; -fx-padding: 10 36;"/>
+    </VBox>
 
-</BorderPane>
+</StackPane>

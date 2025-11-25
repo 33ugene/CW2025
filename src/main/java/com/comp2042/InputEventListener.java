@@ -14,6 +14,8 @@ public interface InputEventListener {
 
     ViewData onHardDropEvent(MoveEvent event);
 
+    ViewData onHoldEvent(MoveEvent event);
+
     ViewData onPauseEvent(MoveEvent event);
 
 

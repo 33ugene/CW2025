@@ -128,6 +128,10 @@ public class SimpleBoard implements Board {
                 (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
+    public Brick getCurrentBrick() {
+        return brickRotator.getBrick();
+    }
+
 
     @Override
     public void newGame() {
