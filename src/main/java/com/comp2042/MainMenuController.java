@@ -32,10 +32,12 @@ public class MainMenuController implements Initializable {
     @FXML private Label subtitleLabel;
     @FXML private Label themeLabel;
     @FXML private Label footerLabel;
+    @FXML private Label highScoreLabel;
     @FXML private ComboBox<ThemeManager.Theme> themePicker;
 
     private Stage primaryStage;
     private ThemeManager themeManager = new ThemeManager();
+    private HighScoreManager highScoreManager = new HighScoreManager();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -72,7 +74,22 @@ public class MainMenuController implements Initializable {
             });
         }
 
+        // Load and display high score
+        updateHighScoreDisplay();
         applyThemeStyles();
+    }
+
+    private void updateHighScoreDisplay() {
+        if (highScoreLabel != null) {
+            int highScore = highScoreManager.getHighScore();
+            highScoreLabel.setText(String.valueOf(highScore));
+        }
+    }
+
+    public void refreshHighScore() {
+        // Reload high score from file in case it was updated
+        highScoreManager = new HighScoreManager();
+        updateHighScoreDisplay();
     }
 
     public void setPrimaryStage(Stage stage) {
@@ -152,6 +169,11 @@ public class MainMenuController implements Initializable {
         setLabelColor(subtitleLabel, palette.getSecondaryText());
         setLabelColor(themeLabel, palette.getSecondaryText());
         setLabelColor(footerLabel, palette.getSecondaryText());
+        
+        // High score label uses accent color for visibility
+        if (highScoreLabel != null) {
+            highScoreLabel.setTextFill(palette.getAccentText());
+        }
 
         styleThemePicker(palette);
     }

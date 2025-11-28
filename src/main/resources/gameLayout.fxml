@@ -79,6 +79,10 @@
 
                         <Label text="TIME" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
                         <Label fx:id="timerLabel" text="00:00" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+                        <Separator style="-fx-background-color: rgba(255,255,255,0.08);"/>
+                        <Label text="HIGH SCORE" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
+                        <Label fx:id="highScoreLabel" text="0" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
                     </VBox>
 
                     <!-- Controls Info -->

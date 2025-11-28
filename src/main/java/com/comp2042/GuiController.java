@@ -3,6 +3,9 @@ package com.comp2042;
 import com.comp2042.logic.bricks.Brick;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.ParallelTransition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -13,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.effect.Reflection;
+import javafx.scene.effect.Glow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -100,6 +104,7 @@ public class GuiController implements Initializable {
     @FXML private Button pauseResumeButton;
     @FXML private Button pauseMenuButton;
     @FXML private Label levelLabel;
+    @FXML private Label highScoreLabel;
 
     private Rectangle[][] holdPieceRectangles = null;
     private int currentLevel = 1;
@@ -273,6 +278,75 @@ public class GuiController implements Initializable {
         }
     }
 
+    public void animateLineClear(List<Integer> clearedRowIndices, int linesCleared, Runnable onComplete) {
+        if (clearedRowIndices == null || clearedRowIndices.isEmpty() || displayMatrix == null) {
+            return;
+        }
+
+        ParallelTransition parallelTransition = new ParallelTransition();
+
+        for (Integer rowIndex : clearedRowIndices) {
+            if (rowIndex < HIDDEN_ROWS || rowIndex >= displayMatrix.length) {
+                continue; // Skip hidden rows or out of bounds
+            }
+
+            int visibleRow = rowIndex - HIDDEN_ROWS;
+            
+            // Animate all cells in this row
+            for (int col = 0; col < displayMatrix[rowIndex].length; col++) {
+                Rectangle rect = displayMatrix[rowIndex][col];
+                if (rect == null) continue;
+
+                // Create flash effect - bright white glow
+                Glow glow = new Glow(1.0);
+                rect.setEffect(glow);
+                rect.setFill(Color.WHITE);
+
+                // Fade out animation
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(300), rect);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+
+                // Scale animation for extra effect
+                ScaleTransition scale = new ScaleTransition(Duration.millis(300), rect);
+                scale.setFromX(1.0);
+                scale.setFromY(1.0);
+                scale.setToX(1.5);
+                scale.setToY(1.5);
+                scale.setAutoReverse(false);
+
+                // Combine animations
+                ParallelTransition cellAnimation = new ParallelTransition(fadeOut, scale);
+                parallelTransition.getChildren().add(cellAnimation);
+            }
+        }
+
+        // Play animation
+        parallelTransition.setOnFinished(e -> {
+            // Reset effects on all rectangles
+            for (Integer rowIndex : clearedRowIndices) {
+                if (rowIndex < HIDDEN_ROWS || rowIndex >= displayMatrix.length) {
+                    continue;
+                }
+                for (int col = 0; col < displayMatrix[rowIndex].length; col++) {
+                    Rectangle rect = displayMatrix[rowIndex][col];
+                    if (rect != null) {
+                        rect.setEffect(null);
+                        rect.setScaleX(1.0);
+                        rect.setScaleY(1.0);
+                        rect.setOpacity(1.0);
+                    }
+                }
+            }
+            // Call the completion callback to refresh the board
+            if (onComplete != null) {
+                onComplete.run();
+            }
+        });
+
+        parallelTransition.play();
+    }
+
     private void setRectangleData(int color, Rectangle rectangle) {
         rectangle.setFill(getFillColor(color));
 
@@ -296,10 +370,10 @@ public class GuiController implements Initializable {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                // Animation is handled in GameController, just show notification
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
-
             }
             refreshBrick(downData.getViewData());
         }
@@ -369,9 +443,22 @@ public class GuiController implements Initializable {
     }
 
     public void gameOver() {
+        gameOver(0, false);
+    }
+
+    public void gameOver(int finalScore, boolean isNewHighScore) {
         timeLine.stop();
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
+        if (isNewHighScore) {
+            System.out.println("🎉 NEW HIGH SCORE: " + finalScore);
+        }
+    }
+
+    public void updateHighScore(int highScore) {
+        if (highScoreLabel != null) {
+            highScoreLabel.setText(String.valueOf(highScore));
+        }
     }
 
     public void newGame(ActionEvent actionEvent) {
@@ -652,6 +739,8 @@ public class GuiController implements Initializable {
             MainMenuController controller = loader.getController();
             controller.setPrimaryStage(primaryStage);
             controller.setThemeManager(themeManager);
+            // Refresh high score display when returning to menu
+            controller.refreshHighScore();
             Scene menuScene = new Scene(root, primaryStage.getScene() != null ? primaryStage.getScene().getWidth() : 900,
                     primaryStage.getScene() != null ? primaryStage.getScene().getHeight() : 620);
             primaryStage.setScene(menuScene);
@@ -692,6 +781,7 @@ public class GuiController implements Initializable {
         setLabelColor(linesLabel, palette.getPrimaryText());
         setLabelColor(timerLabel, palette.getPrimaryText());
         setLabelColor(levelLabel, palette.getPrimaryText());
+        setLabelColor(highScoreLabel, palette.getAccentText());
         setLabelColor(nextPieceTitle, palette.getPrimaryText());
         setLabelColor(holdTitle, palette.getPrimaryText());
         setLabelColor(statsTitle, palette.getPrimaryText());

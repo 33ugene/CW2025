@@ -16,6 +16,8 @@ public class GameController implements InputEventListener {
     private boolean isPaused = false;
     private int lastLevel = 1;
     private final HoldManager holdManager;
+    private final HighScoreManager highScoreManager;
+    private final SoundManager soundManager;
 
     public GameController(GuiController c) {
         viewGuiController = c;
@@ -24,6 +26,11 @@ public class GameController implements InputEventListener {
         this.lastLevel = 1;
 
         holdManager = new HoldManager();
+        highScoreManager = new HighScoreManager();
+        soundManager = new SoundManager();
+        
+        // Display initial high score
+        viewGuiController.updateHighScore(highScoreManager.getHighScore());
 
         BrickGenerator generator = ((SimpleBoard) board).getBrickGenerator();
         //this.currentBrick = generator.getBrick();
@@ -61,29 +68,40 @@ public class GameController implements InputEventListener {
         ClearRow clearRow = null;
         if (!canMove) {
             board.mergeBrickToBackground();
+            soundManager.playSound("lock");
             clearRow = board.clearRows();
             if (clearRow.getLinesRemoved() > 0) {
+                soundManager.playLineClear(clearRow.getLinesRemoved());
+                // Animate line clear, then refresh board after animation
+                viewGuiController.animateLineClear(clearRow.getClearedRowIndices(), clearRow.getLinesRemoved(), 
+                    () -> viewGuiController.refreshGameBackground(board.getBoardMatrix()));
                 scoreManager.addLinesCleared(clearRow.getLinesRemoved());
                 viewGuiController.updateScoreDisplay(scoreManager.getScore(), scoreManager.getLinesCleared(), scoreManager.getLevel());
                 checkLevelSpeedIncrease();
+            } else {
+                // No lines cleared, refresh immediately
+                viewGuiController.refreshGameBackground(board.getBoardMatrix());
             }
             holdManager.resetHold();
             viewGuiController.updateHoldDisplay(holdManager.getHeldBrick(), holdManager.canHold());
 
             if (board.createNewBrick()) {
-                viewGuiController.gameOver();
+                // Check for new high score before game over
+                int finalScore = scoreManager.getScore();
+                boolean isNewHighScore = highScoreManager.updateHighScore(finalScore);
+                soundManager.playSound("game_over");
+                viewGuiController.gameOver(finalScore, isNewHighScore);
                 timerManager.pause();
             } else {
                 BrickGenerator generator = ((SimpleBoard) board).getBrickGenerator();
                 //this.currentBrick = generator.getBrick();
             }
-
-            viewGuiController.refreshGameBackground(board.getBoardMatrix());
             updateNextPiecePreview();
 
             //holdManager.resetHold();
         } else {
             if (event.getEventSource() == EventSource.USER) {
+                soundManager.playSound("drop");
                 scoreManager.addSoftDropPoints();
                 viewGuiController.updateScoreDisplay(scoreManager.getScore(), scoreManager.getLinesCleared(), scoreManager.getLevel());
             }
@@ -100,6 +118,7 @@ public class GameController implements InputEventListener {
 
         if (currentLevel > lastLevel) {
             System.out.println(" Level up " + lastLevel + "->" + currentLevel);
+            soundManager.playSound("level_up");
             viewGuiController.updateGameSpeed(currentLevel);
             lastLevel = currentLevel;
         }
@@ -109,6 +128,7 @@ public class GameController implements InputEventListener {
     public ViewData onLeftEvent(MoveEvent event) {
         if (isPaused) return board.getViewData();
         board.moveBrickLeft();
+        soundManager.playSound("move");
         updateGhostPiece();
         return board.getViewData();
     }
@@ -117,6 +137,7 @@ public class GameController implements InputEventListener {
     public ViewData onRightEvent(MoveEvent event) {
         if (isPaused) return board.getViewData();
         board.moveBrickRight();
+        soundManager.playSound("move");
         updateGhostPiece();
         return board.getViewData();
     }
@@ -125,6 +146,7 @@ public class GameController implements InputEventListener {
     public ViewData onRotateEvent(MoveEvent event) {
         if (isPaused) return board.getViewData();
         board.rotateLeftBrick();
+        soundManager.playSound("rotate");
         updateGhostPiece();
         return board.getViewData();
     }
@@ -138,22 +160,32 @@ public class GameController implements InputEventListener {
             board.moveBrickDown();
         }
 
+        soundManager.playSound("hard_drop");
         scoreManager.addHardDropPoints(dropDistance);
         viewGuiController.updateScoreDisplay(scoreManager.getScore(), scoreManager.getLinesCleared(), scoreManager.getLevel());
 
         board.mergeBrickToBackground();
+        soundManager.playSound("lock");
         ClearRow clearRow = board.clearRows();
         if (clearRow.getLinesRemoved() > 0) {
+            soundManager.playLineClear(clearRow.getLinesRemoved());
+            viewGuiController.animateLineClear(clearRow.getClearedRowIndices(), clearRow.getLinesRemoved(),
+                () -> viewGuiController.refreshGameBackground(board.getBoardMatrix()));
             scoreManager.addLinesCleared(clearRow.getLinesRemoved());
             viewGuiController.updateScoreDisplay(scoreManager.getScore(), scoreManager.getLinesCleared(), scoreManager.getLevel());
             checkLevelSpeedIncrease();
+        } else {
+            viewGuiController.refreshGameBackground(board.getBoardMatrix());
         }
 
         holdManager.resetHold();
         viewGuiController.updateHoldDisplay(holdManager.getHeldBrick(), holdManager.canHold());
 
         if (board.createNewBrick()) {
-            viewGuiController.gameOver();
+            // Check for new high score before game over
+            int finalScore = scoreManager.getScore();
+            boolean isNewHighScore = highScoreManager.updateHighScore(finalScore);
+            viewGuiController.gameOver(finalScore, isNewHighScore);
             timerManager.pause();
         }
 
@@ -182,6 +214,7 @@ public class GameController implements InputEventListener {
             viewGuiController.updateHoldDisplay(holdManager.getHeldBrick(), holdManager.canHold());
             return board.getViewData();
         }
+        soundManager.playSound("hold");
 
         boolean gameOverTriggered = false;
         if (result.shouldGetNewBrick) {
