@@ -2,7 +2,7 @@
 
 ## GitHub
 
-**Repository Link:** [Add your GitHub repository URL here]
+**Repository Link:** https://github.com/33ugene/CW2025.git
 
 ---
 
