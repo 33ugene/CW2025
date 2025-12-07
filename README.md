@@ -119,7 +119,7 @@ All dependencies are managed by Maven and will be automatically downloaded durin
   - Theme-aware UI elements
   - Improved text contrast for light themes
   - Better organized sidebar layout
-- **Status:** ✅ Fully functional
+- **Status:** ❌ Slightly misaligned
 
 ### 10. Timer System
 - **Location:** `src/main/java/com/comp2042/TimerManager.java`
@@ -140,8 +140,7 @@ All dependencies are managed by Maven and will be automatically downloaded durin
 
 ## Implemented but Not Working Properly
 
-### None
-All implemented features are working as expected. No known issues or bugs.
+
 
 ---
 
@@ -150,16 +149,13 @@ All implemented features are working as expected. No known issues or bugs.
 ### 1. Multiplayer Mode
 - **Reason:** Not specified in requirements. Would require significant networking infrastructure and additional UI components.
 
-### 2. Replay/Recording System
-- **Reason:** Not specified in requirements. Would require implementing a move recording system and playback mechanism.
-
-### 3. Custom Key Bindings
+### 2. Custom Key Bindings
 - **Reason:** Not specified in requirements. Current key bindings are hardcoded but functional.
 
-### 4. Leaderboard with Player Names
+### 3. Leaderboard with Player Names
 - **Reason:** High score system stores scores but doesn't include player name input. This would require additional UI for name entry.
 
-### 5. Game Statistics Tracking
+### 4. Game Statistics Tracking
 - **Reason:** Basic stats (score, lines, level, time) are tracked, but detailed statistics like average lines per game, play count, etc. are not implemented.
 
 ---
